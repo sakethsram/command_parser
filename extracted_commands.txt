@@ -1,0 +1,23 @@
+show arp no-resolve | no-more
+show vrrp summary | no-more
+show lldp neighbors | no-more
+show bfd session | no-more
+show rsvp neighbor | no-more
+show rsvp session | no-more
+show route table inet.0 | no-more
+show route table inet.3 | no-more
+show route table mpls.0 | no-more
+show mpls interface | no-more
+show mpls lsp | no-more
+show mpls lsp p2mp | no-more
+show bgp summary | no-more
+show bgp neighbor | no-more
+show isis adjacency extensive | no-more
+show route summary | no-more
+show rsvp session | match DN |no-more
+show mpls lsp unidirectional | match Dn |no-more
+show rsvp session
+show rsvp session
+
+show rsvp session    | ma      no-more
+show mpls lsp unidirectional | no-more
