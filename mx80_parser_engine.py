@@ -9,7 +9,10 @@ from genie.conf.base import Device
 from genie.libs.parser.junos.show_arp import ShowArpNoResolve as GenieShowArpNoResolve
 from mx80_models import (
     ShowArpNoResolve, ShowArpNoResolveEntry,
-    ShowVrrpSummary, ShowVrrpSummaryEntry, ShowVrrpSummaryAddress
+    ShowVrrpSummary, ShowVrrpSummaryEntry, ShowVrrpSummaryAddress,
+    ShowLldpNeighbors, ShowLldpNeighborsEntry,
+    ShowBfdSession, ShowBfdSessionEntry,
+    ShowRsvpNeighbor, ShowRsvpNeighborEntry
 )
 
 
@@ -188,6 +191,200 @@ def _parse_show_vrrp_summary_regex(cli_output: str) -> ShowVrrpSummary:
 
 
 # ========================================
+# show lldp neighbors | no-more
+# ========================================
+
+def parse_show_lldp_neighbors(cli_output: str) -> ShowLldpNeighbors:
+    """
+    Parse 'show lldp neighbors | no-more' output
+    
+    Args:
+        cli_output: Raw CLI output string from command segmenter
+        
+    Returns:
+        ShowLldpNeighbors object with parsed LLDP entries
+    """
+    
+    # No Genie parser available for LLDP on Junos - use regex directly
+    return _parse_show_lldp_neighbors_regex(cli_output)
+
+
+def _parse_show_lldp_neighbors_regex(cli_output: str) -> ShowLldpNeighbors:
+    """
+    Regex-based parser for LLDP neighbors output
+    
+    Format:
+    Local Interface    Parent Interface    Chassis Id          Port info          System Name
+    xe-0/0/2           -                   3c:8a:b0:8a:42:28   xe-0/0/2           ASXPER01.mynetwork.bolt.net
+    """
+    lldp_neighbors = ShowLldpNeighbors()
+    
+    lines = cli_output.split('\n')
+    
+    for line in lines:
+        line = line.strip()
+        if not line or line.startswith('Local Interface'):
+            continue
+        
+        # Pattern to match LLDP neighbor entry
+        # Allows for any number of spaces between fields
+        pattern = r'^(\S+)\s+(\S+)\s+([0-9a-f:]+)\s+(\S+)\s+(.+)$'
+        match = re.match(pattern, line, re.IGNORECASE)
+        
+        if match:
+            entry = ShowLldpNeighborsEntry(
+                local_interface=match.group(1),
+                parent_interface=match.group(2),
+                chassis_id=match.group(3),
+                port_info=match.group(4),
+                system_name=match.group(5).strip()
+            )
+            lldp_neighbors.entries.append(entry)
+    
+    return lldp_neighbors
+
+
+# ========================================
+# show bfd session | no-more
+# ========================================
+
+def parse_show_bfd_session(cli_output: str) -> ShowBfdSession:
+    """
+    Parse 'show bfd session | no-more' output
+    
+    Args:
+        cli_output: Raw CLI output string from command segmenter
+        
+    Returns:
+        ShowBfdSession object with parsed BFD entries
+    """
+    
+    # No Genie parser available for BFD on Junos - use regex directly
+    return _parse_show_bfd_session_regex(cli_output)
+
+
+def _parse_show_bfd_session_regex(cli_output: str) -> ShowBfdSession:
+    """
+    Regex-based parser for BFD session output
+    
+    Format:
+                                                      Detect   Transmit
+    Address                  State     Interface      Time     Interval  Multiplier
+    194.180.106.154          Up        xe-0/0/3.0     0.300     0.100        3   
+    
+    2 sessions, 2 clients
+    Cumulative transmit rate 20.0 pps, cumulative receive rate 20.0 pps
+    """
+    bfd_session = ShowBfdSession()
+    
+    lines = cli_output.split('\n')
+    
+    for line in lines:
+        line_stripped = line.strip()
+        
+        # Skip empty lines and header lines
+        if not line_stripped or 'Address' in line_stripped or 'Detect' in line_stripped:
+            continue
+        
+        # Parse session entry
+        pattern = r'^(\d+\.\d+\.\d+\.\d+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)'
+        match = re.match(pattern, line_stripped)
+        
+        if match:
+            entry = ShowBfdSessionEntry(
+                address=match.group(1),
+                state=match.group(2),
+                interface=match.group(3),
+                detect_time=match.group(4),
+                transmit_interval=match.group(5),
+                multiplier=match.group(6)
+            )
+            bfd_session.entries.append(entry)
+        
+        # Parse summary line: "2 sessions, 2 clients"
+        summary_match = re.search(r'(\d+)\s+sessions?,\s+(\d+)\s+clients?', line_stripped)
+        if summary_match:
+            bfd_session.total_sessions = int(summary_match.group(1))
+            bfd_session.total_clients = int(summary_match.group(2))
+        
+        # Parse cumulative rates
+        rate_match = re.search(r'Cumulative transmit rate\s+(\S+\s+pps),\s+cumulative receive rate\s+(\S+\s+pps)', line_stripped)
+        if rate_match:
+            bfd_session.cumulative_transmit_rate = rate_match.group(1)
+            bfd_session.cumulative_receive_rate = rate_match.group(2)
+    
+    return bfd_session
+
+
+# ========================================
+# show rsvp neighbor | no-more
+# ========================================
+
+def parse_show_rsvp_neighbor(cli_output: str) -> ShowRsvpNeighbor:
+    """
+    Parse 'show rsvp neighbor | no-more' output
+    
+    Args:
+        cli_output: Raw CLI output string from command segmenter
+        
+    Returns:
+        ShowRsvpNeighbor object with parsed RSVP neighbor entries
+    """
+    
+    # No Genie parser available for RSVP neighbor on Junos - use regex directly
+    return _parse_show_rsvp_neighbor_regex(cli_output)
+
+
+def _parse_show_rsvp_neighbor_regex(cli_output: str) -> ShowRsvpNeighbor:
+    """
+    Regex-based parser for RSVP neighbor output
+    
+    Format:
+    RSVP neighbor: 4 learned
+    Address            Idle Up/Dn LastChange HelloInt HelloTx/Rx MsgRcvd
+    194.180.107.35        0  1/0  69w1d 21:24:27        9 4654964/4654963 3869
+    """
+    rsvp_neighbor = ShowRsvpNeighbor()
+    
+    lines = cli_output.split('\n')
+    
+    for line in lines:
+        line_stripped = line.strip()
+        
+        # Parse header line to get total neighbors
+        header_match = re.search(r'RSVP neighbor:\s+(\d+)\s+learned', line_stripped)
+        if header_match:
+            rsvp_neighbor.total_neighbors = int(header_match.group(1))
+            continue
+        
+        # Skip empty lines and header lines
+        if not line_stripped or 'Address' in line_stripped or 'Idle' in line_stripped:
+            continue
+        
+        # Parse neighbor entry - more flexible pattern to handle varying spaces in LastChange
+        pattern = r'^(\d+\.\d+\.\d+\.\d+)\s+(\d+)\s+(\d+/\d+)\s+(.+?)\s+(\d+)\s+(\d+/\d+)\s+(\d+)$'
+        match = re.match(pattern, line_stripped)
+        
+        if match:
+            entry = ShowRsvpNeighborEntry(
+                address=match.group(1),
+                idle=match.group(2),
+                up_dn=match.group(3),
+                last_change=match.group(4).strip(),
+                hello_interval=match.group(5),
+                hello_tx_rx=match.group(6),
+                msg_rcvd=match.group(7)
+            )
+            rsvp_neighbor.entries.append(entry)
+    
+    # If total_neighbors wasn't set from header, use entry count
+    if rsvp_neighbor.total_neighbors == 0:
+        rsvp_neighbor.total_neighbors = len(rsvp_neighbor.entries)
+    
+    return rsvp_neighbor
+
+
+# ========================================
 # Main execution
 # ========================================
 
@@ -195,17 +392,20 @@ if __name__ == "__main__":
     import json
     from command_segmenter import (
         read_mx80_show_commands, 
-        extract_show_arp_output,
-        extract_show_vrrp_summary_output
+        extract_show_arp_output_1,
+        extract_show_vrrp_summary_output_2,
+        extract_show_lldp_neighbors_output_3,
+        extract_show_bfd_session_output_4,
+        extract_show_rsvp_neighbor_output_5
     )
     
-    raw_output = read_mx80_show_commands()
+    raw_output = read_mx80_show_commands("juniper_show_command.txt")
     
     # Test show arp no-resolve
     print("=" * 50)
     print("show arp no-resolve | no-more")
     print("=" * 50)
-    arp_output = extract_show_arp_output(raw_output)
+    arp_output = extract_show_arp_output_1(raw_output)
     arp_result = parse_show_arp_no_resolve(arp_output)
     print(json.dumps(arp_result.to_dict(), indent=2))
     
@@ -213,6 +413,30 @@ if __name__ == "__main__":
     print("\n" + "=" * 50)
     print("show vrrp summary | no-more")
     print("=" * 50)
-    vrrp_output = extract_show_vrrp_summary_output(raw_output)
+    vrrp_output = extract_show_vrrp_summary_output_2(raw_output)
     vrrp_result = parse_show_vrrp_summary(vrrp_output)
     print(json.dumps(vrrp_result.to_dict(), indent=2))
+    
+    # Test show lldp neighbors
+    print("\n" + "=" * 50)
+    print("show lldp neighbors | no-more")
+    print("=" * 50)
+    lldp_output = extract_show_lldp_neighbors_output_3(raw_output)
+    lldp_result = parse_show_lldp_neighbors(lldp_output)
+    print(json.dumps(lldp_result.to_dict(), indent=2))
+    
+    # Test show bfd session
+    print("\n" + "=" * 50)
+    print("show bfd session | no-more")
+    print("=" * 50)
+    bfd_output = extract_show_bfd_session_output_4(raw_output)
+    bfd_result = parse_show_bfd_session(bfd_output)
+    print(json.dumps(bfd_result.to_dict(), indent=2))
+    
+    # Test show rsvp neighbor
+    print("\n" + "=" * 50)
+    print("show rsvp neighbor | no-more")
+    print("=" * 50)
+    rsvp_output = extract_show_rsvp_neighbor_output_5(raw_output)
+    rsvp_result = parse_show_rsvp_neighbor(rsvp_output)
+    print(json.dumps(rsvp_result.to_dict(), indent=2))
