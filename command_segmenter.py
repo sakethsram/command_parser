@@ -10,7 +10,6 @@ def read_mx80_show_commands(file_path):
 
     return mx80_show_commands_output
 
-
 def extract_show_arp_output_1(terminal_output: str):
     """
     Extracts the output of:
@@ -661,69 +660,70 @@ def extract_show_mpls_lsp_unidirectional_output_22(terminal_output: str):
 
 
 if __name__ == "__main__":
-    s = read_mx80_show_commands(file_path="juniper_show_command.txt")
+
+    s = read_mx80_show_commands(file_path="pre_check.txt")
     print("extract_show_arp_output_1:")
     print(extract_show_arp_output_1(s))
     
-    print("\nextract_show_vrrp_summary_output_2:")
-    print(extract_show_vrrp_summary_output_2(s))
+    # print("\nextract_show_vrrp_summary_output_2:")
+    # print(extract_show_vrrp_summary_output_2(s))
     
-    print("\nextract_show_lldp_neighbors_output_3:")
-    print(extract_show_lldp_neighbors_output_3(s))
+    # print("\nextract_show_lldp_neighbors_output_3:")
+    # print(extract_show_lldp_neighbors_output_3(s))
     
-    print("\nextract_show_bfd_session_output_4:")
-    print(extract_show_bfd_session_output_4(s))
+    # print("\nextract_show_bfd_session_output_4:")
+    # print(extract_show_bfd_session_output_4(s))
     
-    print("\nextract_show_rsvp_neighbor_output_5:")
-    print(extract_show_rsvp_neighbor_output_5(s))
+    # print("\nextract_show_rsvp_neighbor_output_5:")
+    # print(extract_show_rsvp_neighbor_output_5(s))
     
-    print("\nextract_show_rsvp_session_output_6:")
-    print(extract_show_rsvp_session_output_6(s))
+    # print("\nextract_show_rsvp_session_output_6:")
+    # print(extract_show_rsvp_session_output_6(s))
     
-    print("\nextract_show_route_table_inet0_output_7:")
-    print(extract_show_route_table_inet0_output_7(s))
+    # print("\nextract_show_route_table_inet0_output_7:")
+    # print(extract_show_route_table_inet0_output_7(s))
     
-    print("\nextract_show_route_table_inet3_output_8:")
-    print(extract_show_route_table_inet3_output_8(s))
+    # print("\nextract_show_route_table_inet3_output_8:")
+    # print(extract_show_route_table_inet3_output_8(s))
     
-    print("\nextract_show_route_table_mpls0_output_9:")
-    print(extract_show_route_table_mpls0_output_9(s))
+    # print("\nextract_show_route_table_mpls0_output_9:")
+    # print(extract_show_route_table_mpls0_output_9(s))
     
-    print("\nextract_show_mpls_interface_output_10:")
-    print(extract_show_mpls_interface_output_10(s))
+    # print("\nextract_show_mpls_interface_output_10:")
+    # print(extract_show_mpls_interface_output_10(s))
     
-    print("\nextract_show_mpls_lsp_output_11:")
-    print(extract_show_mpls_lsp_output_11(s))
+    # print("\nextract_show_mpls_lsp_output_11:")
+    # print(extract_show_mpls_lsp_output_11(s))
     
-    print("\nextract_show_mpls_lsp_p2mp_output_12:")
-    print(extract_show_mpls_lsp_p2mp_output_12(s))
+    # print("\nextract_show_mpls_lsp_p2mp_output_12:")
+    # print(extract_show_mpls_lsp_p2mp_output_12(s))
     
-    print("\nextract_show_bgp_summary_output_13:")
-    print(extract_show_bgp_summary_output_13(s))
+    # print("\nextract_show_bgp_summary_output_13:")
+    # print(extract_show_bgp_summary_output_13(s))
     
-    print("\nextract_show_bgp_neighbor_output_14:")
-    print(extract_show_bgp_neighbor_output_14(s))
+    # print("\nextract_show_bgp_neighbor_output_14:")
+    # print(extract_show_bgp_neighbor_output_14(s))
     
-    print("\nextract_show_isis_adjacency_extensive_output_15:")
-    print(extract_show_isis_adjacency_extensive_output_15(s))
+    # print("\nextract_show_isis_adjacency_extensive_output_15:")
+    # print(extract_show_isis_adjacency_extensive_output_15(s))
     
-    print("\nextract_show_route_summary_output_16:")
-    print(extract_show_route_summary_output_16(s))
+    # print("\nextract_show_route_summary_output_16:")
+    # print(extract_show_route_summary_output_16(s))
     
-    print("\nextract_show_rsvp_session_match_dn_output_17:")
-    print(extract_show_rsvp_session_match_dn_output_17(s))
+    # print("\nextract_show_rsvp_session_match_dn_output_17:")
+    # print(extract_show_rsvp_session_match_dn_output_17(s))
     
-    print("\nextract_show_mpls_lsp_unidirectional_match_dn_output_18:")
-    print(extract_show_mpls_lsp_unidirectional_match_dn_output_18(s))
+    # print("\nextract_show_mpls_lsp_unidirectional_match_dn_output_18:")
+    # print(extract_show_mpls_lsp_unidirectional_match_dn_output_18(s))
     
-    print("\nextract_show_rsvp_session_first_output_19:")
-    print(extract_show_rsvp_session_first_output_19(s))
+    # print("\nextract_show_rsvp_session_first_output_19:")
+    # print(extract_show_rsvp_session_first_output_19(s))
     
-    print("\nextract_show_rsvp_session_second_output_20:")
-    print(extract_show_rsvp_session_second_output_20(s))
+    # print("\nextract_show_rsvp_session_second_output_20:")
+    # print(extract_show_rsvp_session_second_output_20(s))
     
-    print("\nextract_show_rsvp_session_ma_output_21:")
-    print(extract_show_rsvp_session_ma_output_21(s))
+    # print("\nextract_show_rsvp_session_ma_output_21:")
+    # print(extract_show_rsvp_session_ma_output_21(s))
     
-    print("\nextract_show_mpls_lsp_unidirectional_output_22:")
-    print(extract_show_mpls_lsp_unidirectional_output_22(s))
+    # print("\nextract_show_mpls_lsp_unidirectional_output_22:")
+    # print(extract_show_mpls_lsp_unidirectional_output_22(s))
